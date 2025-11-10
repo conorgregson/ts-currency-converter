@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./build/js",
+    "noEmit": false
+  },
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["node_modules", "build"],
+
+  "scripts": {
+    "build": "tsc",
+    "build:tests": "tsc -p tsconfig.tests.json",
+    "build:all": "npm run build:tests"
+  }
+}

@@ -1,0 +1,166 @@
+/* --- Debug Link (bottom corner) --- */
+#debug-link {
+  position: fixed;
+  bottom: 6px;
+  right: 10px;
+  font-size: 0.8rem;
+  color: #999999;
+  opacity: 0.4;
+  text-decoration: none;
+  z-index: 50;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+#debug-link:hover,
+#debug-link:focus {
+  opacity: 0.85;
+  color: #666666;
+}
+
+/* --- Panel Overlay --- */
+#debug-panel {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* --- Panel Box --- */
+#debug-panel .debug-box {
+  background: #ffffff;
+  color: #111111;
+  max-width: 650px;
+  width: 90%;
+  height: 75%;
+  overflow: auto;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+#debug-panel h3 {
+  margin-top: 0;
+  margin-bottom: 0.25rem;
+}
+#debug-panel button {
+  margin-right: 0.5rem;
+}
+
+/* --- Legend Badges --- */
+.debug-legend {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  color: #ffffff;
+  user-select: none;
+}
+.level-info {
+  background: #3b82f6;
+}
+.level-warn {
+  background: #f59e0b;
+}
+.level-error {
+  background: #ef4444;
+}
+
+/* --- Logs --- */
+.debug-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #111;
+}
+
+.log-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  line-height: 1.3;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding-bottom: 0.2rem;
+}
+
+.log-time {
+  color: #6b7280;
+}
+.log-name {
+  font-weight: 600;
+}
+.log-error {
+  color: #dc2626;
+  font-weight: 500;
+}
+.log-level {
+  color: #ffffff;
+  border-radius: 3px;
+  padding: 0 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.log-level.level-info {
+  background: #3b82f6;
+}
+.log-level.level-warn {
+  background: #f59e0b;
+}
+.log-level.level-error {
+  background: #ef4444;
+}
+
+/* --- Dark Mode --- */
+@media (prefers-color-scheme: dark) {
+  #debug-link {
+    color: #bbb;
+  }
+  #debug-link:hover,
+  #debug-link:focus {
+    color: #eee;
+    opacity: 0.9;
+  }
+
+  #debug-panel .debug-box {
+    background: #1f2937;
+    color: #f1f5f9;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
+  }
+
+  .debug-content {
+    color: #f3f4f6;
+  }
+
+  .log-line {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .log-time {
+    color: #9ca3af;
+  }
+
+  .log-error {
+    color: #f87171;
+  }
+
+  .badge.level-info {
+    background: #60a5fa;
+  }
+  .badge.level-warn {
+    background: #fbbf24;
+  }
+  .badge.level-error {
+    background: #f87171;
+  }
+}

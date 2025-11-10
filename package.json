@@ -1,0 +1,19 @@
+{
+  "name": "ts-currency-converter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Typed Currency Converter mini-app built with TypeScript and the Frankfurter API.",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc -w -p tsconfig.json",
+    "dev:tests": "tsc -w -p tsconfig.tests.json",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.tests.json",
+    "build:prod": "tsc -p tsconfig.prod.json && tsc -p tsconfig.tests.json && node ./esbuild.minify.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "esbuild": "^0.23.0"
+  },
+  "author": "Conor Gregson",
+  "license": "MIT"
+}
