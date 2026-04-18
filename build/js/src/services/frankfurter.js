@@ -11,12 +11,12 @@
  *  - Successful responses are shape-validated before returning Ok<T>
  *  - Optional caching for /currencies controlled via CONFIG.USE_CACHE
  */
-import { fetchJSON } from "../utils/http.js";
-import { ok, err } from "../utils/result.js";
-import { error } from "../utils/errors.js";
-import { isCurrenciesResponse, isConvertResponse, asCurrencyCode, } from "../domain/currency.js";
-import { getCache, setCache } from "../utils/cache.js";
-import { CONFIG } from "../config.js";
+import { fetchJSON } from "../utils/http";
+import { ok, err } from "../utils/result";
+import { error } from "../utils/errors";
+import { isCurrenciesResponse, isConvertResponse, asCurrencyCode, } from "../domain/currency";
+import { getCache, setCache } from "../utils/cache";
+import { CONFIG } from "../config";
 /** Type guard for Frankfurter error payloads. */
 function isApiErrorShape(data) {
     return (typeof data === "object" &&

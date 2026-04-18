@@ -1,9 +1,9 @@
-import { ok, err, map, unwrapOr } from "../src/utils/result.js";
-import { fetchJSON } from "../src/utils/http.js";
-import { isCurrenciesResponse } from "../src/domain/currency.js";
-import { withMockFetch, setFetchSequence, resetLastRequestUrl, getLastRequestUrl, } from "./mocks.js";
-import { fetchCurrencies, convertAmount } from "../src/services/frankfurter.js";
-import { clearCacheNamespace } from "../src/utils/cache.js";
+import { ok, err, map, unwrapOr } from "../src/utils/result";
+import { fetchJSON } from "../src/utils/http";
+import { isCurrenciesResponse } from "../src/domain/currency";
+import { withMockFetch, setFetchSequence, resetLastRequestUrl, getLastRequestUrl, } from "./mocks";
+import { fetchCurrencies, convertAmount } from "../src/services/frankfurter";
+import { clearCacheNamespace } from "../src/utils/cache";
 const outputEl = document.getElementById("out");
 /** Append a line to the output <pre>. */
 function assert(condition, message) {

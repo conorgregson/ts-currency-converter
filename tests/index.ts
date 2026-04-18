@@ -1,26 +1,22 @@
-import { ok, err, map, unwrapOr } from "../src/utils/result.js";
-import { fetchJSON } from "../src/utils/http.js";
-import { isCurrenciesResponse } from "../src/domain/currency.js";
+import { ok, err, map, unwrapOr } from "../src/utils/result";
+import { fetchJSON } from "../src/utils/http";
+import { isCurrenciesResponse } from "../src/domain/currency";
 import {
   withMockFetch,
   setFetchSequence,
   resetLastRequestUrl,
   getLastRequestUrl,
-} from "./mocks.js";
-import { fetchCurrencies, convertAmount } from "../src/services/frankfurter.js";
-import { clearCacheNamespace } from "../src/utils/cache.js";
+} from "./mocks";
+import { fetchCurrencies, convertAmount } from "../src/services/frankfurter";
+import { clearCacheNamespace } from "../src/utils/cache";
 
 const outputEl = document.getElementById("out") as HTMLPreElement | null;
 
-/** Append a line to the output <pre>. */
 function assert(condition: boolean, message: string) {
   if (!outputEl) return;
   outputEl.textContent += (condition ? "✅ " : "❌ ") + message + "\n";
 }
 
-/* -------------------------------------------------------------------------- */
-/*                               Result helpers                               */
-/* -------------------------------------------------------------------------- */
 await (async function resultTests() {
   const okResult = ok(1);
   const errResult = err("x" as const);
@@ -32,9 +28,6 @@ await (async function resultTests() {
   assert(mapped.ok && mapped.data === 3, "map() transforms success value");
 })();
 
-/* -------------------------------------------------------------------------- */
-/*                              fetchJSON retries                              */
-/* -------------------------------------------------------------------------- */
 await withMockFetch(async () => {
   setFetchSequence([
     { kind: "timeout" }, // first attempt: simulate timeout
@@ -47,28 +40,22 @@ await withMockFetch(async () => {
 
   assert(
     response.ok && response.data.hello === "world",
-    "fetchJSON retries once then succeeds"
+    "fetchJSON retries once then succeeds",
   );
 });
 
-/* -------------------------------------------------------------------------- */
-/*                               Type validators                               */
-/* -------------------------------------------------------------------------- */
 const validCurrencies = { USD: "United States Dollar" };
 const invalidCurrencies = { USD: 1 } as any;
 
 assert(
   isCurrenciesResponse(validCurrencies),
-  "validator: valid currencies object passes"
+  "validator: valid currencies object passes",
 );
 assert(
   !isCurrenciesResponse(invalidCurrencies),
-  "validator: wrong type rejected"
+  "validator: wrong type rejected",
 );
 
-/* -------------------------------------------------------------------------- */
-/*                           API error shape check                             */
-/* -------------------------------------------------------------------------- */
 await withMockFetch(async () => {
   setFetchSequence([
     { kind: "json", status: 400, body: { error: "Bad currency code" } },
@@ -80,15 +67,10 @@ await withMockFetch(async () => {
 
   assert(
     !response.ok,
-    "fetchJSON reports !ok for HTTP 400 responses (as expected)"
+    "fetchJSON reports !ok for HTTP 400 responses (as expected)",
   );
 });
 
-/* -------------------------------------------------------------------------- */
-/*                          Services: fetchCurrencies                          */
-/* -------------------------------------------------------------------------- */
-
-// happy path: returns a currencies map and passes the shape guard
 await withMockFetch(async () => {
   clearCacheNamespace();
   setFetchSequence([
@@ -107,7 +89,6 @@ await withMockFetch(async () => {
   assert(okRes, "fetchCurrencies: happy path returns valid mapping");
 });
 
-// api error path: { error: string } is surfaced as AppError(kind: "Api")
 await withMockFetch(async () => {
   clearCacheNamespace();
   setFetchSequence([
@@ -119,7 +100,6 @@ await withMockFetch(async () => {
   assert(okRes, 'fetchCurrencies: API error payload → AppError("Api")');
 });
 
-// shape error path: wrong structure triggers Parse error
 await withMockFetch(async () => {
   clearCacheNamespace();
   setFetchSequence([{ kind: "json", status: 200, body: { USD: 1 } }]); // invalid shape
@@ -129,7 +109,6 @@ await withMockFetch(async () => {
   assert(okRes, 'fetchCurrencies: unexpected shape → AppError("Parse")');
 });
 
-// ensure /currencies endpoint was actually called (not served from cache)
 await withMockFetch(async () => {
   clearCacheNamespace();
   resetLastRequestUrl();
@@ -143,15 +122,10 @@ await withMockFetch(async () => {
     getLastRequestUrl()?.endsWith("/currencies") ?? false;
   assert(
     calledCurrenciesEndpoint,
-    "fetchCurrencies: called /currencies endpoint"
+    "fetchCurrencies: called /currencies endpoint",
   );
 });
 
-/* -------------------------------------------------------------------------- */
-/*                              Services: convert                              */
-/* -------------------------------------------------------------------------- */
-
-// happy path: a valid conversion returns rates + date/base
 await withMockFetch(async () => {
   setFetchSequence([
     {
@@ -176,7 +150,6 @@ await withMockFetch(async () => {
   assert(okRes, "convert: happy path returns expected rate");
 });
 
-// api error path: { error: string } → AppError("Api")
 await withMockFetch(async () => {
   setFetchSequence([
     { kind: "json", status: 400, body: { error: "Unknown currency" } },
@@ -187,7 +160,6 @@ await withMockFetch(async () => {
   assert(okRes, 'convert: API error payload → AppError("Api")');
 });
 
-// validation path: clearly invalid currency code is rejected before fetch
 await (async () => {
   const result = await convertAmount(1, "usd", "eur"); // lowercase should fail branding
   const okRes = !result.ok && result.error.kind === "Validation";

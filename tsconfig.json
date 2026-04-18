@@ -5,9 +5,6 @@
     "moduleResolution": "Bundler",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
 
-    "rootDir": "./src",
-    "outDir": "./build/js",
-
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
@@ -16,9 +13,10 @@
     "isolatedModules": true,
 
     "sourceMap": true,
-    "noEmitOnError": true,
-    "incremental": true
+    "noEmit": true,
+    "incremental": true,
+    "types": ["vite/client"]
   },
   "include": ["src"],
-  "exclude": ["build", "node_modules"]
+  "exclude": ["build", "dist", "node_modules"]
 }

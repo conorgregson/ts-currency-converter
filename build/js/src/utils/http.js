@@ -14,8 +14,8 @@
  *  });
  *  if (isOk(response)) { render(response.data); } else { showError(response.error); }
  */
-import { err, ok } from "./result.js";
-import { error } from "./errors.js";
+import { err, ok } from "./result";
+import { error } from "./errors";
 /** Sensible defaults for most network-bound GETs. */
 const defaultRetry = {
     retries: 2,
