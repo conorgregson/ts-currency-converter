@@ -1,18 +1,4 @@
-/**
- * app.ts — application orchestrator for the Currency Converter
- *
- * Responsibilities:
- *  - Initialize UI, load currencies, and wire up event handlers
- *  - Invoke service layer (Frankfurter) and render results
- *  - Provide user feedback via status chips and result output
- *  - Log timings and errors to the telemetry logger
- *
- * Shortcuts:
- *  - Ctrl/Cmd + K → focus amount input
- *  - Shift + S     → swap currencies
- */
-
-import { fetchCurrencies, convertAmount } from "./services/frankfurter.js";
+import { fetchCurrencies, convertAmount } from "./services/frankfurter";
 import {
   selectOne,
   selectOneStrict,
@@ -23,15 +9,12 @@ import {
   setResultOutput,
   setButtonLoading,
   showError,
-} from "./ui/render.js";
-import { AppError } from "./utils/errors.js";
-import { initDebugPanel } from "./ui/debug-panel.js";
-import { logger } from "./utils/logger.js";
-import { CONFIG } from "./config.js";
+} from "./ui/render";
+import { AppError } from "./utils/errors";
+import { initDebugPanel } from "./ui/debug-panel";
+import { logger } from "./utils/logger";
+import { CONFIG } from "./config";
 
-// --- App state & helpers ---
-
-/** Local UI state used to drive conversions and display. */
 type AppState = {
   amount: number;
   from: string;
@@ -39,10 +22,6 @@ type AppState = {
   isBusy: boolean;
 };
 
-/**
- * Converts a typed AppError into a short, user-facing string.
- * Keeps UX messages consistent and non-technical.
- */
 function formatError(e: AppError): string {
   switch (e.kind) {
     case "Timeout":
@@ -64,8 +43,6 @@ function formatError(e: AppError): string {
 
 /**
  * Measures and logs the duration of an async operation.
- * - On success: logs info with durationMs
- * - On failure: logs error with kind and duration context, then rethrows
  */
 async function timed<T>(name: string, operation: () => Promise<T>): Promise<T> {
   const start = performance.now();
@@ -84,14 +61,7 @@ async function timed<T>(name: string, operation: () => Promise<T>): Promise<T> {
   }
 }
 
-// --- Entry point ---
-
-/**
- * Initializes the app: queries DOM, loads currencies, wires events, and
- * performs the initial rate preview.
- */
 export async function initApp() {
-  // Required elements (throws early if missing for predictable failures)
   const amountEl = selectOneStrict<HTMLInputElement>("#amount");
   const fromEl = selectOneStrict<HTMLSelectElement>("#from");
   const toEl = selectOneStrict<HTMLSelectElement>("#to");
@@ -101,10 +71,8 @@ export async function initApp() {
   const statusEl = selectOneStrict<HTMLElement>("#status");
   const copyBtn = selectOneStrict<HTMLButtonElement>("#copy-btn");
 
-  // Optional preview node (render text into it if present)
   const ratePreviewEl = selectOne<HTMLElement>("#rate-preview");
 
-  // Initial UI state (defaults are safe and predictable)
   const state: AppState = {
     amount: Number(amountEl.value) || 0,
     from: "USD",
@@ -112,14 +80,10 @@ export async function initApp() {
     isBusy: false,
   };
 
-  /**
-   * Loads currency list, renders both selects, and sets defaults.
-   * Displays transient loading state and error messages when needed.
-   */
   async function bootCurrencies() {
     setStatusChip(statusEl, "info", "Loading currencies…");
     const response = await timed("services:fetchCurrencies", () =>
-      fetchCurrencies()
+      fetchCurrencies(),
     );
     if (!response.ok) {
       if (CONFIG.LOG_ERRORS)
@@ -135,15 +99,11 @@ export async function initApp() {
     clearStatusChip(statusEl);
   }
 
-  /**
-   * Updates the small 1-unit rate preview (non-blocking UX hint).
-   * Silently clears on error; logs a warn for visibility in debug panel.
-   */
   async function updateRatePreview() {
     if (ratePreviewEl) setStatusChip(statusEl, "info", "Updating preview…");
 
     const unit = await timed("services:convert:unit", () =>
-      convertAmount(1, fromEl.value, toEl.value)
+      convertAmount(1, fromEl.value, toEl.value),
     );
 
     if (!unit.ok) {
@@ -161,12 +121,6 @@ export async function initApp() {
     clearStatusChip(statusEl);
   }
 
-  /**
-   * Performs the main conversion flow:
-   *  - Validates input
-   *  - Shows busy state and clears previous result
-   *  - Calls convert API and renders formatted result
-   */
   async function runConvert() {
     const amount = Number(amountEl.value);
     if (!Number.isFinite(amount) || amount < 0) {
@@ -185,7 +139,7 @@ export async function initApp() {
     resultEl.value = "";
 
     const response = await timed("services:convert", () =>
-      convertAmount(state.amount, state.from, state.to)
+      convertAmount(state.amount, state.from, state.to),
     );
 
     state.isBusy = false;
@@ -203,7 +157,7 @@ export async function initApp() {
       setStatusChip(
         statusEl,
         "error",
-        "Conversion failed: missing rate for selected currency."
+        "Conversion failed: missing rate for selected currency.",
       );
       return;
     }
@@ -211,11 +165,9 @@ export async function initApp() {
     setResultOutput(resultEl, state.amount, base, state.to, out);
     setStatusChip(statusEl, "success", `Rate date: ${date}`);
 
-    // Update the 1-unit preview (fire-and-forget)
     void updateRatePreview();
   }
 
-  /** Swaps currency selects and refreshes the rate preview. */
   function swap() {
     const a = fromEl.value;
     const b = toEl.value;
@@ -226,18 +178,13 @@ export async function initApp() {
     void updateRatePreview();
   }
 
-  // --- Event wiring ---
-
-  // Convert on submit
   formEl.addEventListener("submit", (event) => {
     event.preventDefault();
     void runConvert();
   });
 
-  // Swap currencies
   swapBtn.addEventListener("click", swap);
 
-  // Changing either currency resets result and updates preview
   fromEl.addEventListener("change", () => {
     resultEl.value = "";
     setStatusChip(statusEl, "info", "Ready to convert.");
@@ -250,7 +197,6 @@ export async function initApp() {
     void updateRatePreview();
   });
 
-  // Copy result to clipboard (with selection fallback)
   copyBtn.addEventListener("click", async () => {
     const text = (resultEl.value ?? "").trim();
     if (!text) return;
@@ -258,7 +204,6 @@ export async function initApp() {
       await navigator.clipboard.writeText(text);
       // Optional: buttonToast(copyBtn, "Copied!", 800);
     } catch {
-      // Fallback: select output text
       const selection = window.getSelection();
       if (!selection) return;
       selection.removeAllRanges();
@@ -268,7 +213,6 @@ export async function initApp() {
     }
   });
 
-  // Keyboard shortcuts for quick UX
   window.addEventListener("keydown", (event) => {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
       event.preventDefault();
@@ -282,8 +226,6 @@ export async function initApp() {
       return;
     }
   });
-
-  // --- Boot sequence ---
 
   await bootCurrencies();
   await updateRatePreview();

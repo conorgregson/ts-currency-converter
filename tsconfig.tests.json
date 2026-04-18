@@ -3,14 +3,10 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "./build/js",
-    "noEmit": false
+    "noEmit": false,
+    "incremental": false,
+    "sourceMap": true
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"],
-  "exclude": ["node_modules", "build"],
-
-  "scripts": {
-    "build": "tsc",
-    "build:tests": "tsc -p tsconfig.tests.json",
-    "build:all": "npm run build:tests"
-  }
+  "exclude": ["node_modules", "build", "dist"]
 }

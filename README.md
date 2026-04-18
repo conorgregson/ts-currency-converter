@@ -1,13 +1,14 @@
 # TypeScript Currency Converter
 
-A lightweight, fully typed currency converter built with **plain TypeScript + DOM APIs**.
-Fetches live exchange rates from the [Frankfurter API](https://www.frankfurter.app/), supports caching, telemetry logging, and a developer debug overlay — all dependency-free.
+A lightweight, fully typed currency converter built with **TypeScript, Vite, and DOM APIs**.
+It fetches live exchange rates from the **Frankfurter API**, includes runtime validation, timeout + retry handling, local caching, telemetry logging, and a browser-based debug overlay.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20App-0ea5e9?logo=githubpages&logoColor=white)](https://conorgregson.github.io/ts-quiz-app)
-![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue?logo=typescript)
-![Learning](https://img.shields.io/badge/Practice-Learning%20Project-8b5cf6)
-![Status](https://img.shields.io/badge/Status-Complete-22c55e)
-![License: MIT](https://img.shields.io/badge/License-MIT-f59e0b)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20App-0ea5e9?style=for-the-badge&logo=vercel&logoColor=white)](https://conorgregson.github.io/ts-currency-converter)
+![TypeScript](https://img.shields.io/badge/TypeScript-Strict%20Mode-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-Build%20Tool-646cff?style=for-the-badge&logo=vite&logoColor=white)
+![Learning Project](https://img.shields.io/badge/Project-Learning-8b5cf6?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Complete-22c55e?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-f59e0b?style=for-the-badge)
 
 ---
 
@@ -16,6 +17,7 @@ Fetches live exchange rates from the [Frankfurter API](https://www.frankfurter.a
 ### Core
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646cff?style=for-the-badge&logo=vite&logoColor=white)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 
@@ -32,43 +34,46 @@ Fetches live exchange rates from the [Frankfurter API](https://www.frankfurter.a
 
 **▶ Try it now:** https://conorgregson.github.io/ts-currency-converter
 
-> Data is saved locally in your browser via `localStorage`
+> Data is cached locally in your browser via `localStorage`.
 
 ---
 
 ## About
 
-This mini-app focuses on **strong types and clean architecture** without frameworks. It shows how to:
+This mini-app focuses on **strong types and clean architecture** without a framework. It demonstrates how to:
 
-- Model and validate API data with runtime guards.
-- Isolate fetch logic with **timeout + retry** and **TTL cache**.
-- Track performance via a tiny **telemetry logger** and **debug overlay**.
-- Keep the UI accessible with `aria-live` updates and keyboard shortcuts.
+- model and validate API data with runtime guards
+- isolate fetch logic with **timeout + retry**
+- cache currency metadata with a **TTL-based localStorage layer**
+- track runtime events with a small **telemetry logger**
+- provide accessible status updates and keyboard shortcuts in a minimal UI
 
 ---
 
 ## Features
 
 - **Live currency conversion** using the Frankfurter API
-- **Runtime validation** for all API responses
-- **Configurable caching** with TTL (localStorage)
-- **Timeout & retry** logic for resilient requests
-- **Telemetry logging** for performance timing
-- **Debug overlay** (⌘/Ctrl + D or “Debug” link) showing color-coded logs
-- **Accessible UI** with `aria-live` updates and keyboard shortcuts
-  - `Ctrl/⌘ + K` → focus amount
+- **Runtime validation** for API response shapes
+- **Timeout + retry** handling for resilient network requests
+- **TTL cache** for the currencies list
+- **Telemetry logging** with a browser debug panel
+- **Accessible UI feedback** with `aria-live` status updates
+- **Keyboard shortcuts**
+  - `Ctrl/⌘ + K` → focus amount input
   - `Shift + S` → swap currencies
+- **Browser-based test harness** using mocked fetch responses
 
 ---
 
 ## Tech Stack
 
-- **TypeScript** (strict mode enabled) — all modules fully typed with `noImplicitAny`, `strictNullChecks`, and runtime validation for API data.
-- **HTML5** and **CSS3** — semantic structure and responsive styling for a minimal, accessible interface.
-- **Fetch API** + **Frankfurter API** — retrieves live exchange rates with proper error handling and retry logic.
-- **LocalStorage API** — caches currency lists and recent conversions with TTL-based persistence.
-- **ES Modules** — uses browser-native imports for modular, dependency-free architecture.
-- **Compiled** via `tsc -w` — automatic TypeScript-to-JavaScript compilation into `/build/js`.
+- **TypeScript** — strict typing across domain, service, UI, and utility layers
+- **Vite** — dev server and production build pipeline
+- **HTML5** and **CSS3** — semantic markup and lightweight styling
+- **Fetch API** — network access for exchange rate requests
+- **Frankfurter API** — live currency data
+- **LocalStorage API** — caching and telemetry persistence
+- **ES Modules** — modular browser-native architecture
 
 ---
 
@@ -78,59 +83,43 @@ This mini-app focuses on **strong types and clean architecture** without framewo
 ts-currency-converter/
 │
 ├── src/
-│   ├── app.ts                            # orchestrates events & state
-│   ├── main.ts                           # entry point
-│   ├── config.ts                         # constants (API base, TTL, flags)
+│   ├── app.ts
+│   ├── main.ts
+│   ├── config.ts
+│   ├── vite-env.d.ts
 │   │
 │   ├── domain/
-│   │   └── currency.ts                    # runtime validation + branded types
+│   │   └── currency.ts
 │   │
 │   ├── services/
-│   │   └── frankfurter.ts                 # typed API client
+│   │   └── frankfurter.ts
 │   │
 │   ├── ui/
-│   │   ├── render.ts                      # DOM helpers & status/result rendering
-│   │   ├── debug-panel.ts                 # developer overlay for telemetry logs
-│   │   └── modal.css                      # styling for debug overlay (light/dark)
+│   │   ├── render.ts
+│   │   ├── debug-panel.ts
+│   │   └── modal.css
 │   │
-│   ├── utils/
-│   │   ├── cache.ts                       # TTL-based caching (localStorage)
-│   │   ├── errors.ts                      # AppError definitions
-│   │   ├── http.ts                        # fetchJSON with timeout & retry
-│   │   ├── logger.ts                      # telemetry logger + helpers
-│   │   └── result.ts                      # functional Result<T,E> pattern
-│   │
-│   └── tests/
-│       ├── index.ts                       # browser-based integration tests
-│       ├── mocks.ts                       # step-based fetch mocking
-│       └── index.html                     # test runner
+│   └── utils/
+│       ├── cache.ts
+│       ├── dom.ts
+│       ├── errors.ts
+│       ├── http.ts
+│       ├── logger.ts
+│       └── result.ts
 │
-├── build/                                 # Compiled JavaScript output (tsc)
-│   └── js/
-│       └── *.js
+├── tests/
+│   ├── index.ts
+│   ├── mocks.ts
+│   └── index.html
 │
-├── dist/                                  # production-ready minified JS (via esbuild)
-│   └── js/
-├── images/                                # Screenshots
-│   ├── main-ui.png
-│   ├── debug-panel-light.png
-│   ├── debug-panel-dark.png
-│   ├── error-state.png
-│   └── tests-pass.png
-│
-├── index.html                             # Main HTML file
-├── styles.css                             # Base styling
-│
-├── esbuild.minify.mjs                     # minifier script for dist build:contentReference[oaicite:3]{index=3}
-├── tsconfig.json                          # TypeScript configuration
-├── tsconfig.tests.json                    # test build config:contentReference[oaicite:1]{index=1}
-├── tsconfig.prod.json                     # production build config:contentReference[oaicite:2]{index=2}
-├── package.json                           # scripts, metadata, devDependencies:contentReference[oaicite:0]{index=0}
-│
-├── README.md                              # Project documentation
-├── LICENSE.md                             # License documentation
-├── .gitignore                             # Git ignore rules
-└── .gitattributes                         # Text normalization
+├── dist/                  # Vite production output
+├── index.html             # App shell
+├── styles.css             # Global styles
+├── package.json
+├── tsconfig.json
+├── tsconfig.tests.json
+├── README.md
+└── LICENSE
 ```
 
 ---
@@ -139,7 +128,7 @@ ts-currency-converter/
 
 ### Main UI
 
-The main interface showing amount input, currency selectors, and conversion button.
+The main interface showing amount input, currency selectors, and conversion output.
 
 ![Main UI](images/main-ui.png)
 
@@ -175,47 +164,107 @@ App gracefully handling a delayed response, showing timeout feedback after 5000 
 
 ---
 
-## Tests
+## Getting Started
 
-All core modules (**Result**, **HTTP**, **Cache**, **Services**) are verified through browser-based integration tests using a mock `fetch` sequence.
-Run locally by opening `tests/index.html`.
+### 1. Clone the project
 
-![Tests Pass](images/tests-pass.png)
+```bash
+git clone https://github.com/conorgregson/ts-currency-converter.git
+cd ts-currency-converter
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Start the Vite dev server
+
+```bash
+npm run dev
+```
+
+### 4. Build for production
+
+```bash
+npm run build
+```
+
+### 5. Preview the production build
+
+```bash
+npm run preview
+```
+
+---
+
+## Running Browser Tests
+
+This project keeps a small browser-based test harness alongside the main Vite app.
+
+### Build the test files
+
+```bash
+npm run build:tests
+```
+
+### Run the tests
+
+Open:
+
+```text
+tests/index.html
+```
+
+The tests cover core utility and service behavior using a mocked `fetch` queue.
+
+---
+
+## Available Scripts
+
+```bash
+npm run dev
+npm run build
+npm run preview
+npm run build:tests
+npm run test:browser
+```
+
+---
+
+## Architecture Notes
+
+The project is organized into small focused layers:
+
+- `domain/` → branded types and runtime validators
+- `services/` → typed API client logic
+- `ui/` → DOM rendering and debug panel helpers
+- `utils/` → result handling, caching, HTTP helpers, logging, and DOM helpers
+
+This keeps the app logic easy to trace and makes each file easier to test and maintain.
 
 ---
 
 ## Learning Focus
 
-- This mini-project demonstrates:
-  - Modular architecture without frameworks
-  - Strong TypeScript typing across layers
-  - Separation of concerns (**domain**, **utils**, **services**, **UI**)
-  - Error-handling and observability patterns
-  - Progressive enhancement for debugging and accessibility
+This project was built to practice:
 
----
-
-## Getting Started
-
-1. **Clone & open** the project.
-2. If you prefer auto-compile, run TypeScript in watch mode:
-   ```bash
-   tsc -w
-   ```
-3. **Open `index.html`** (e.g., via VS Code’s Live Server).
-4. Optional: Toggle the **Debug** overlay with ⌘/Ctrl + **D** (or the page link).
-
-_No build tools required; the app is dependency-free._
+- modular frontend architecture without React or other frameworks
+- strong TypeScript typing and runtime validation
+- resilient HTTP handling with timeout and retry behavior
+- caching and observability patterns
+- progressive enhancement for accessibility and debugging
 
 ---
 
 ## Known Limitations & Future Improvements
 
-- Frankfurter base is **EUR**; consider showing the effective cross-rate when “from” ≠ EUR.
-- Add a **“flip” animation** for currency swaps.
-- Add **rate date** and **historical conversion** picker.
-- Persist **last used currencies** and **amount** between sessions.
-- Optional **unit tests** for domain guards and cache.
+- add historical conversion support
+- display richer rate metadata
+- persist last-used amount and currencies
+- improve copy-result feedback
+- consider migrating browser tests to a more formal test runner later
 
 ---
 

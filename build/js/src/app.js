@@ -11,11 +11,11 @@
  *  - Ctrl/Cmd + K → focus amount input
  *  - Shift + S     → swap currencies
  */
-import { fetchCurrencies, convertAmount } from "./services/frankfurter.js";
-import { selectOne, selectOneStrict, renderCurrencyOptions, selectValue, setStatusChip, clearStatusChip, setResultOutput, setButtonLoading, showError, } from "./ui/render.js";
-import { initDebugPanel } from "./ui/debug-panel.js";
-import { logger } from "./utils/logger.js";
-import { CONFIG } from "./config.js";
+import { fetchCurrencies, convertAmount } from "./services/frankfurter";
+import { selectOne, selectOneStrict, renderCurrencyOptions, selectValue, setStatusChip, clearStatusChip, setResultOutput, setButtonLoading, showError, } from "./ui/render";
+import { initDebugPanel } from "./ui/debug-panel";
+import { logger } from "./utils/logger";
+import { CONFIG } from "./config";
 /**
  * Converts a typed AppError into a short, user-facing string.
  * Keeps UX messages consistent and non-technical.
