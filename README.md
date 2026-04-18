@@ -32,7 +32,7 @@ It fetches live exchange rates from the **Frankfurter API**, includes runtime va
 
 ## Live Demo
 
-**▶ Try it now:** https://conorgregson.github.io/ts-currency-converter
+**▶ Try it now:** https://typescript-currency-converter.vercel.app
 
 > Data is cached locally in your browser via `localStorage`.
 
