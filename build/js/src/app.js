@@ -1,25 +1,8 @@
-/**
- * app.ts — application orchestrator for the Currency Converter
- *
- * Responsibilities:
- *  - Initialize UI, load currencies, and wire up event handlers
- *  - Invoke service layer (Frankfurter) and render results
- *  - Provide user feedback via status chips and result output
- *  - Log timings and errors to the telemetry logger
- *
- * Shortcuts:
- *  - Ctrl/Cmd + K → focus amount input
- *  - Shift + S     → swap currencies
- */
 import { fetchCurrencies, convertAmount } from "./services/frankfurter";
 import { selectOne, selectOneStrict, renderCurrencyOptions, selectValue, setStatusChip, clearStatusChip, setResultOutput, setButtonLoading, showError, } from "./ui/render";
 import { initDebugPanel } from "./ui/debug-panel";
 import { logger } from "./utils/logger";
 import { CONFIG } from "./config";
-/**
- * Converts a typed AppError into a short, user-facing string.
- * Keeps UX messages consistent and non-technical.
- */
 function formatError(e) {
     switch (e.kind) {
         case "Timeout":
@@ -40,8 +23,6 @@ function formatError(e) {
 }
 /**
  * Measures and logs the duration of an async operation.
- * - On success: logs info with durationMs
- * - On failure: logs error with kind and duration context, then rethrows
  */
 async function timed(name, operation) {
     const start = performance.now();
@@ -59,13 +40,7 @@ async function timed(name, operation) {
         throw err;
     }
 }
-// --- Entry point ---
-/**
- * Initializes the app: queries DOM, loads currencies, wires events, and
- * performs the initial rate preview.
- */
 export async function initApp() {
-    // Required elements (throws early if missing for predictable failures)
     const amountEl = selectOneStrict("#amount");
     const fromEl = selectOneStrict("#from");
     const toEl = selectOneStrict("#to");
@@ -74,19 +49,13 @@ export async function initApp() {
     const resultEl = selectOneStrict("#result");
     const statusEl = selectOneStrict("#status");
     const copyBtn = selectOneStrict("#copy-btn");
-    // Optional preview node (render text into it if present)
     const ratePreviewEl = selectOne("#rate-preview");
-    // Initial UI state (defaults are safe and predictable)
     const state = {
         amount: Number(amountEl.value) || 0,
         from: "USD",
         to: "EUR",
         isBusy: false,
     };
-    /**
-     * Loads currency list, renders both selects, and sets defaults.
-     * Displays transient loading state and error messages when needed.
-     */
     async function bootCurrencies() {
         setStatusChip(statusEl, "info", "Loading currencies…");
         const response = await timed("services:fetchCurrencies", () => fetchCurrencies());
@@ -102,10 +71,6 @@ export async function initApp() {
         selectValue(toEl, state.to);
         clearStatusChip(statusEl);
     }
-    /**
-     * Updates the small 1-unit rate preview (non-blocking UX hint).
-     * Silently clears on error; logs a warn for visibility in debug panel.
-     */
     async function updateRatePreview() {
         if (ratePreviewEl)
             setStatusChip(statusEl, "info", "Updating preview…");
@@ -124,12 +89,6 @@ export async function initApp() {
         }
         clearStatusChip(statusEl);
     }
-    /**
-     * Performs the main conversion flow:
-     *  - Validates input
-     *  - Shows busy state and clears previous result
-     *  - Calls convert API and renders formatted result
-     */
     async function runConvert() {
         const amount = Number(amountEl.value);
         if (!Number.isFinite(amount) || amount < 0) {
@@ -159,10 +118,8 @@ export async function initApp() {
         }
         setResultOutput(resultEl, state.amount, base, state.to, out);
         setStatusChip(statusEl, "success", `Rate date: ${date}`);
-        // Update the 1-unit preview (fire-and-forget)
         void updateRatePreview();
     }
-    /** Swaps currency selects and refreshes the rate preview. */
     function swap() {
         const a = fromEl.value;
         const b = toEl.value;
@@ -172,15 +129,11 @@ export async function initApp() {
         setStatusChip(statusEl, "info", "Currencies swapped. Ready to convert.");
         void updateRatePreview();
     }
-    // --- Event wiring ---
-    // Convert on submit
     formEl.addEventListener("submit", (event) => {
         event.preventDefault();
         void runConvert();
     });
-    // Swap currencies
     swapBtn.addEventListener("click", swap);
-    // Changing either currency resets result and updates preview
     fromEl.addEventListener("change", () => {
         resultEl.value = "";
         setStatusChip(statusEl, "info", "Ready to convert.");
@@ -191,7 +144,6 @@ export async function initApp() {
         setStatusChip(statusEl, "info", "Ready to convert.");
         void updateRatePreview();
     });
-    // Copy result to clipboard (with selection fallback)
     copyBtn.addEventListener("click", async () => {
         const text = (resultEl.value ?? "").trim();
         if (!text)
@@ -201,7 +153,6 @@ export async function initApp() {
             // Optional: buttonToast(copyBtn, "Copied!", 800);
         }
         catch {
-            // Fallback: select output text
             const selection = window.getSelection();
             if (!selection)
                 return;
@@ -211,7 +162,6 @@ export async function initApp() {
             selection.addRange(range);
         }
     });
-    // Keyboard shortcuts for quick UX
     window.addEventListener("keydown", (event) => {
         if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
             event.preventDefault();
@@ -225,7 +175,6 @@ export async function initApp() {
             return;
         }
     });
-    // --- Boot sequence ---
     await bootCurrencies();
     await updateRatePreview();
     if (CONFIG.DEBUG_PANEL)
